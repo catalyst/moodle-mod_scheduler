@@ -126,6 +126,17 @@ function scheduler_action_doaddsession($scheduler, $formdata, moodle_url $return
                 if (!$conflicts || $resolvable) {
                     $slotid = $DB->insert_record('scheduler_slots', $slot, true, true);
                     $slotobj = $scheduler->get_slot($slotid);
+
+                    // Update notes for the repeated slots if they have any files/images in them.
+                    $editor = $data->notes_editor;
+                    $options = array('trusttext' => true, 'maxfiles' => -1, 'maxbytes' => 0,
+                                    'context' => $scheduler->get_context(), 'subdirs' => false);
+                    $context = $scheduler->get_context();
+                    $slotobj->notes = file_save_draft_area_files($editor['itemid'], $context->id, 'mod_scheduler', 'slotnote',
+                                            $slotid, $options, $editor['text']);
+                    $slotobj->notesformat = $editor['format'];
+                    $slotobj->save();
+
                     \mod_scheduler\event\slot_added::create_from_slot($slotobj)->trigger();
                     $countslots++;
                 }

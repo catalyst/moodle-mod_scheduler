@@ -578,6 +578,11 @@ class scheduler_addsession_form extends scheduler_slotform_base {
         $this->add_minutes_field('break', 'break', 0, 'minutes');
         $mform->disabledIf('break', 'divide', 'eq', '0');
 
+        // Slot comments.
+        $mform->addElement('editor', 'notes', get_string('comments', 'scheduler'),
+                           array('rows' => 3, 'columns' => 60), $this->noteoptions);
+        $mform->setType('notes', PARAM_RAW); // Must be PARAM_RAW for rich text editor content.
+
         // Force when overlap?
         $mform->addElement('selectyesno', 'forcewhenoverlap', get_string('forcewhenoverlap', 'scheduler'));
         $mform->addHelpButton('forcewhenoverlap', 'forcewhenoverlap', 'scheduler');
